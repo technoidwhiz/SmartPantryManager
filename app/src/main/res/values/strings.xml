@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Smart Pantry Manager</string>
+    <string name="pantry_title">My Pantry</string>
+    <string name="pantry_description">Keep track of your ingredients and find recipes you can make.</string>
+    <string name="add_ingredient">Add ingredient</string>
+    <string name="empty_pantry">Your pantry is empty.\nTap Add ingredient to get started.</string>
+    <string name="suggested_recipes">Suggested recipes</string>
+    <string name="settings">Settings</string>
 </resources>
