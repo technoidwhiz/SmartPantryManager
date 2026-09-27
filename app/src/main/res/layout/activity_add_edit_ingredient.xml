@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7FAF7"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/textFormTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_ingredient"
+            android:textColor="#203B2C"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:labelFor="@id/editIngredientName"
+            android:text="@string/ingredient_name_label"
+            android:textColor="#203B2C"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editIngredientName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:hint="@string/ingredient_name_hint"
+            android:inputType="textCapSentences"
+            android:maxLength="80"
+            android:maxLines="1"
+            android:textColor="#203B2C"
+            android:textColorHint="#526158" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:labelFor="@id/editQuantity"
+            android:text="@string/quantity_label"
+            android:textColor="#203B2C"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/editQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:hint="@string/quantity_hint"
+            android:inputType="numberDecimal"
+            android:maxLength="12"
+            android:maxLines="1"
+            android:textColor="#203B2C"
+            android:textColorHint="#526158" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:labelFor="@id/spinnerUnit"
+            android:text="@string/unit_label"
+            android:textColor="#203B2C"
+            android:textSize="16sp" />
+
+        <Spinner
+            android:id="@+id/spinnerUnit"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:spinnerMode="dropdown" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/unit_help"
+            android:textColor="#526158"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/buttonSaveIngredient"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:minHeight="48dp"
+            android:backgroundTint="#276749"
+            android:text="@string/save_ingredient"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="48dp"
+            android:backgroundTint="#E2EBE5"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="#203B2C" />
+
+    </LinearLayout>
+</ScrollView>

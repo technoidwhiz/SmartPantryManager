@@ -6,4 +6,35 @@
     <string name="empty_pantry">Your pantry is empty.\nTap Add ingredient to get started.</string>
     <string name="suggested_recipes">Suggested recipes</string>
     <string name="settings">Settings</string>
+    <string name="edit_ingredient">Edit ingredient</string>
+    <string name="ingredient_name_label">Ingredient name</string>
+    <string name="ingredient_name_hint">For example, rice</string>
+    <string name="quantity_label">Quantity</string>
+    <string name="quantity_hint">For example, 500</string>
+    <string name="unit_label">Unit</string>
+    <string name="unit_help">Use g or kg for weight, ml or l for volume, and pcs for individual items.</string>
+    <string name="save_ingredient">Save ingredient</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_name_required">Enter an ingredient name.</string>
+    <string name="error_quantity_invalid">Enter a valid quantity greater than zero.</string>
+    <string name="ingredient_saved">Ingredient saved.</string>
+    <string name="ingredient_not_found">This ingredient could not be found.</string>
+    <string name="error_save_failed">Could not save the ingredient. Please try again.</string>
+
+    <string-array name="pantry_units">
+        <item>g</item>
+        <item>kg</item>
+        <item>ml</item>
+        <item>l</item>
+        <item>pcs</item>
+    </string-array>
+    <string name="pantry_item_actions">Tap to edit or delete</string>
+    <string name="pantry_quantity_display">%1$s %2$s</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="delete_ingredient_title">Delete ingredient?</string>
+    <string name="delete_ingredient_message">Remove %1$s from your pantry?</string>
+    <string name="ingredient_deleted">Ingredient deleted.</string>
+    <string name="error_load_pantry">Could not load your pantry. Please reopen the app to try again.</string>
+    <string name="error_delete_failed">Could not delete the ingredient. Please try again.</string>
 </resources>

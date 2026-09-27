@@ -1,0 +1,172 @@
+package com.titus.smartpantrymanager;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "smart_pantry.db";
+    private static final int DATABASE_VERSION = 1;
+
+    private static final String TABLE_PANTRY = "pantry_items";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_QUANTITY = "quantity";
+    private static final String COLUMN_UNIT = "unit";
+
+    public DatabaseHelper(Context context) {
+        super(context.getApplicationContext(),
+                DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String createPantryTable =
+                "CREATE TABLE " + TABLE_PANTRY + " (" +
+                        COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        COLUMN_NAME + " TEXT NOT NULL " +
+                        "CHECK(length(trim(name)) > 0), " +
+                        COLUMN_QUANTITY + " REAL NOT NULL CHECK(quantity > 0), " +
+                        COLUMN_UNIT + " TEXT NOT NULL " +
+                        "CHECK(length(trim(unit)) > 0))";
+
+        db.execSQL(createPantryTable);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Add a migration here when the database structure changes.
+        // Never delete the user's pantry to perform an upgrade.
+        throw new IllegalStateException(
+                "No database migration from " + oldVersion + " to " + newVersion);
+    }
+
+    // CREATE: save a new ingredient and return its database ID.
+    public long addPantryItem(String name, double quantity, String unit) {
+        ContentValues values = createValues(name, quantity, unit);
+        SQLiteDatabase db = getWritableDatabase();
+
+        return db.insertOrThrow(TABLE_PANTRY, null, values);
+    }
+
+    // READ: return all ingredients in alphabetical order.
+    public List<PantryItem> getAllPantryItems() {
+        List<PantryItem> items = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        try (Cursor cursor = db.query(
+                TABLE_PANTRY,
+                null,
+                null,
+                null,
+                null,
+                null,
+                COLUMN_NAME + " COLLATE NOCASE ASC, " + COLUMN_ID + " ASC")) {
+
+            while (cursor.moveToNext()) {
+                items.add(readPantryItem(cursor));
+            }
+        }
+
+        return items;
+    }
+
+    // READ: find one ingredient for the edit screen.
+    public PantryItem getPantryItem(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        try (Cursor cursor = db.query(
+                TABLE_PANTRY,
+                null,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(id)},
+                null,
+                null,
+                null)) {
+
+            if (cursor.moveToFirst()) {
+                return readPantryItem(cursor);
+            }
+        }
+
+        return null;
+    }
+
+    // UPDATE: change only the ingredient with the supplied ID.
+    public boolean updatePantryItem(
+            long id, String name, double quantity, String unit) {
+
+        ContentValues values = createValues(name, quantity, unit);
+        SQLiteDatabase db = getWritableDatabase();
+
+        int updatedRows = db.update(
+                TABLE_PANTRY,
+                values,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(id)});
+
+        return updatedRows == 1;
+    }
+
+    // DELETE: remove only the ingredient with the supplied ID.
+    public boolean deletePantryItem(long id) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        int deletedRows = db.delete(
+                TABLE_PANTRY,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(id)});
+
+        return deletedRows == 1;
+    }
+
+    // Check values before they reach the database.
+    private ContentValues createValues(
+            String name, double quantity, String unit) {
+
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ingredient name is required.");
+        }
+
+        if (Double.isNaN(quantity)
+                || Double.isInfinite(quantity)
+                || quantity <= 0) {
+            throw new IllegalArgumentException(
+                    "Quantity must be a number greater than zero.");
+        }
+
+        if (unit == null || unit.trim().isEmpty()) {
+            throw new IllegalArgumentException("A unit is required.");
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, name.trim());
+        values.put(COLUMN_QUANTITY, quantity);
+        values.put(COLUMN_UNIT, unit.trim());
+
+        return values;
+    }
+
+    // Convert one database row into a Java object.
+    private PantryItem readPantryItem(Cursor cursor) {
+        long id = cursor.getLong(
+                cursor.getColumnIndexOrThrow(COLUMN_ID));
+
+        String name = cursor.getString(
+                cursor.getColumnIndexOrThrow(COLUMN_NAME));
+
+        double quantity = cursor.getDouble(
+                cursor.getColumnIndexOrThrow(COLUMN_QUANTITY));
+
+        String unit = cursor.getString(
+                cursor.getColumnIndexOrThrow(COLUMN_UNIT));
+
+        return new PantryItem(id, name, quantity, unit);
+    }
+}
