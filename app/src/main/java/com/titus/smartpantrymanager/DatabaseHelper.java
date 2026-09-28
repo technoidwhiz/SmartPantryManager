@@ -12,7 +12,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "smart_pantry.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TABLE_PANTRY = "pantry_items";
     private static final String COLUMN_ID = "id";
@@ -37,14 +37,134 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         "CHECK(length(trim(unit)) > 0))";
 
         db.execSQL(createPantryTable);
+        createRecipeTables(db);
+        RecipeSeeder.seed(db);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Add a migration here when the database structure changes.
-        // Never delete the user's pantry to perform an upgrade.
-        throw new IllegalStateException(
-                "No database migration from " + oldVersion + " to " + newVersion);
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    @Override
+    public void onUpgrade(
+            SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        // Upgrade existing installations without removing pantry records.
+        if (oldVersion < 2) {
+            createRecipeTables(db);
+            RecipeSeeder.seed(db);
+        }
+    }
+
+    private void createRecipeTables(SQLiteDatabase db) {
+        db.execSQL(
+                "CREATE TABLE recipes (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "name TEXT NOT NULL CHECK(length(trim(name)) > 0), " +
+                        "method TEXT NOT NULL CHECK(length(trim(method)) > 0))");
+
+        db.execSQL(
+                "CREATE TABLE recipe_ingredients (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "recipe_id INTEGER NOT NULL, " +
+                        "name TEXT NOT NULL CHECK(length(trim(name)) > 0), " +
+                        "quantity REAL NOT NULL CHECK(quantity > 0), " +
+                        "unit TEXT NOT NULL CHECK(unit IN " +
+                        "('g', 'kg', 'ml', 'l', 'pcs')), " +
+                        "FOREIGN KEY(recipe_id) REFERENCES recipes(id) " +
+                        "ON DELETE CASCADE)");
+
+        db.execSQL(
+                "CREATE INDEX index_recipe_ingredients_recipe_id " +
+                        "ON recipe_ingredients(recipe_id)");
+    }
+
+    public List<Recipe> getAllRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        try (Cursor cursor = db.query(
+                "recipes",
+                new String[]{"id", "name", "method"},
+                null, null, null, null,
+                "name COLLATE NOCASE ASC")) {
+
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(
+                        cursor.getColumnIndexOrThrow("id"));
+
+                String name = cursor.getString(
+                        cursor.getColumnIndexOrThrow("name"));
+
+                String method = cursor.getString(
+                        cursor.getColumnIndexOrThrow("method"));
+
+                recipes.add(new Recipe(
+                        id, name, method, getRecipeIngredients(db, id)));
+            }
+        }
+
+        return recipes;
+    }
+
+    public Recipe getRecipe(long recipeId) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        try (Cursor cursor = db.query(
+                "recipes",
+                new String[]{"id", "name", "method"},
+                "id = ?",
+                new String[]{String.valueOf(recipeId)},
+                null, null, null)) {
+
+            if (cursor.moveToFirst()) {
+                String name = cursor.getString(
+                        cursor.getColumnIndexOrThrow("name"));
+
+                String method = cursor.getString(
+                        cursor.getColumnIndexOrThrow("method"));
+
+                return new Recipe(
+                        recipeId,
+                        name,
+                        method,
+                        getRecipeIngredients(db, recipeId));
+            }
+        }
+
+        return null;
+    }
+
+    private List<RecipeIngredient> getRecipeIngredients(
+            SQLiteDatabase db, long recipeId) {
+
+        List<RecipeIngredient> ingredients = new ArrayList<>();
+
+        try (Cursor cursor = db.query(
+                "recipe_ingredients",
+                new String[]{"name", "quantity", "unit"},
+                "recipe_id = ?",
+                new String[]{String.valueOf(recipeId)},
+                null, null, "id ASC")) {
+
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(
+                        cursor.getColumnIndexOrThrow("name"));
+
+                double quantity = cursor.getDouble(
+                        cursor.getColumnIndexOrThrow("quantity"));
+
+                String unit = cursor.getString(
+                        cursor.getColumnIndexOrThrow("unit"));
+
+                ingredients.add(
+                        new RecipeIngredient(name, quantity, unit));
+            }
+        }
+
+        return ingredients;
     }
 
     // CREATE: save a new ingredient and return its database ID.
