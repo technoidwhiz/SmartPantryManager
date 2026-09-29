@@ -37,4 +37,9 @@
     <string name="ingredient_deleted">Ingredient deleted.</string>
     <string name="error_load_pantry">Could not load your pantry. Please reopen the app to try again.</string>
     <string name="error_delete_failed">Could not delete the ingredient. Please try again.</string>
+    <string name="recipes_description">Recipes you can make with the ingredients and quantities in your pantry.</string>
+    <string name="recipe_match_count">Available recipes: %1$d of %2$d</string>
+    <string name="empty_recipe_matches">No recipes match your pantry yet.\n\nAdd ingredients or update your quantities, then check again.</string>
+    <string name="back_to_pantry">Back to Pantry</string>
+    <string name="error_load_recipes">Unable to load recipes. Please return to your pantry and try again.</string>
 </resources>

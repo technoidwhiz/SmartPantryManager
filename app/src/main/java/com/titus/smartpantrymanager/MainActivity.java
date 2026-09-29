@@ -25,6 +25,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        findViewById(R.id.buttonSuggestedRecipes)
+                .setOnClickListener(view -> {
+                    Intent intent = new Intent(
+                            MainActivity.this,
+                            SuggestedRecipesActivity.class);
+                    startActivity(intent);
+                });
 
         ViewCompat.setOnApplyWindowInsetsListener(
                 findViewById(R.id.main), (view, insets) -> {
@@ -53,7 +60,13 @@ public class MainActivity extends AppCompatActivity {
                             AddEditIngredientActivity.class);
                     startActivity(intent);
                 });
-
+        findViewById(R.id.buttonSettings)
+                .setOnClickListener(view -> {
+                    Intent intent = new Intent(
+                            MainActivity.this,
+                            SettingsActivity.class);
+                    startActivity(intent);
+                });
         listPantry.setOnItemClickListener(
                 (parent, view, position, id) -> {
                     PantryItem item = pantryAdapter.getItem(position);
